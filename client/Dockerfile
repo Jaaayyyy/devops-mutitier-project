@@ -1,24 +1,22 @@
-FROM node:14-alpine AS builder
-ENV NODE_ENV production
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY client/package.json .
-COPY client/yarn.lock .
-RUN yarn install --production
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
 
-COPY client .
+COPY . .
 
-RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+FROM node:16-alpine
 
+WORKDIR /app
 
-FROM nginx:1.21.0-alpine as production
-ENV NODE_ENV production
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
 
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY . .
 
-COPY ./client/nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 3000
+CMD ["npm", "start"]
