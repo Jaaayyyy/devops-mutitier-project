@@ -5,69 +5,55 @@ pipeline {
         DOCKER_HUB_USER = "jayeshmdocker"
         FRONTEND_IMAGE  = "devops-multitier-frontend"
         BACKEND_IMAGE   = "devops-multitier-backend"
-        KUBE_NAMESPACE  = "default"
     }
 
     stages {
 
-        stage("Checkout Code") {
+        stage('Checkout Code') {
             steps {
-                git branch: "main",
-                    url: "https://github.com/Jaaayyyy/devops-mutitier-project.git"
+                checkout scm
             }
         }
 
-        stage("Docker Login") {
+        stage('Login to DockerHub') {
             steps {
-                withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')]) {
-                    sh """
-                    echo $DOCKER_PASS | docker login -u ${DOCKER_HUB_USER} --password-stdin
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat """
+                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                     """
                 }
             }
         }
 
-        stage("Build Docker Images") {
+        stage('Build Docker Images') {
             steps {
-                sh """
-                docker compose build
+                bat "docker compose build"
+            }
+        }
+
+        stage('Tag Docker Images') {
+            steps {
+                bat """
+                docker tag devops-mutitier-project-frontend:latest %DOCKER_HUB_USER%/%FRONTEND_IMAGE%:latest
+                docker tag devops-mutitier-project-backend:latest %DOCKER_HUB_USER%/%BACKEND_IMAGE%:latest
                 """
             }
         }
 
-        stage("Tag Docker Images") {
+        stage('Push Docker Images') {
             steps {
-                sh """
-                docker tag devops-multitier-project-frontend:latest ${DOCKER_HUB_USER}/${FRONTEND_IMAGE}:latest
-                docker tag devops-multitier-project-backend:latest ${DOCKER_HUB_USER}/${BACKEND_IMAGE}:latest
+                bat """
+                docker push %DOCKER_HUB_USER%/%FRONTEND_IMAGE%:latest
+                docker push %DOCKER_HUB_USER%/%BACKEND_IMAGE%:latest
                 """
             }
         }
 
-        stage("Push Docker Images") {
+        stage('Deploy to Kubernetes') {
             steps {
-                sh """
-                docker push ${DOCKER_HUB_USER}/${FRONTEND_IMAGE}:latest
-                docker push ${DOCKER_HUB_USER}/${BACKEND_IMAGE}:latest
-                """
+                bat "kubectl apply -f k8s/"
             }
-        }
-
-        stage("Deploy to Kubernetes") {
-            steps {
-                sh """
-                kubectl apply -f k8s/
-                """
-            }
-        }
-    }
-
-    post {
-        success {
-            echo "CI/CD Pipeline executed successfully"
-        }
-        failure {
-            echo "Pipeline failed"
-        }
-    }
-}
