@@ -1,7 +1,7 @@
 
-import * as React from "react";
-import ApexCharts from "apexcharts";
+import React from "react";
 import ReactApexChart from "react-apexcharts";
+
 
 function Chart({ paymentHistory }) {
 

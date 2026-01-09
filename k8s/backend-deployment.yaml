@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: jayeshmdocker/devops-backend:1.0
+        image: jayeshmdocker/evops-multitier-backend:latest
         ports:
         - containerPort: 5000
         env:
