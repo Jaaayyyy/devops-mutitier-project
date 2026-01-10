@@ -15,7 +15,7 @@ This project is a multi-tier web application built using React (Frontend), Node.
 <img src="images/jenkins.png" width="600" alt="Jenkins Pipeline"/>
 
 **Grafana Dashboard**  
-<img src="images/grafana.png" width="600" alt="Grafana Dashboard"/>
+<img src="images/graphna.png" width="600" alt="Grafana Dashboard"/>
 
 </div>
 
