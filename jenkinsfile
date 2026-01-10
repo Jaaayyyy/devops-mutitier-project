@@ -38,8 +38,8 @@ pipeline {
         stage('Tag Docker Images') {
             steps {
                 bat """
-                docker tag devops-mutitier-project-frontend:latest %DOCKER_HUB_USER%/%FRONTEND_IMAGE%:latest
-                docker tag devops-mutitier-project-backend:latest %DOCKER_HUB_USER%/%BACKEND_IMAGE%:latest
+                docker tag devops-multitier-project-frontend:latest %DOCKER_HUB_USER%/%FRONTEND_IMAGE%:latest
+                docker tag devops-multitier-project-backend:latest %DOCKER_HUB_USER%/%BACKEND_IMAGE%:latest
                 """
             }
         }
