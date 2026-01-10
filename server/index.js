@@ -8,6 +8,7 @@ import nodemailer from 'nodemailer'
 import pdf from 'html-pdf'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
+import client from 'prom-client' // ✅ Prometheus client
 
 import invoiceRoutes from './routes/invoices.js'
 import clientRoutes from './routes/clients.js'
@@ -29,6 +30,20 @@ const app = express()
 app.use(express.json({ limit: "30mb", extended: true }))
 app.use(express.urlencoded({ limit: "30mb", extended: true }))
 app.use(cors())
+
+// Prometheus Metrics ✅
+const collectDefaultMetrics = client.collectDefaultMetrics
+collectDefaultMetrics() // Collect CPU, memory, and Node.js default metrics
+
+// Metrics endpoint for Prometheus
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', client.register.contentType)
+    res.end(await client.register.metrics())
+  } catch (err) {
+    res.status(500).end(err)
+  }
+})
 
 // Routes
 app.use('/invoices', invoiceRoutes)
