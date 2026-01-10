@@ -54,14 +54,14 @@ pipeline {
         }
 
        stage('Deploy to Kubernetes') {
-    environment {
-        KUBECONFIG = "C:\\ProgramData\\Jenkins\\.kube\\config"
+            environment {
+                KUBECONFIG = "C:\\ProgramData\\Jenkins\\.kube\\config"
+            }
+            steps {
+                bat "kubectl apply -f k8s/"
+            }
+        }
     }
-    steps {
-        bat "kubectl apply -f k8s/"
-    }
-}
-
 
     post {
         success {
